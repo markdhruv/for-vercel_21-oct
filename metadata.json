@@ -1,0 +1,5 @@
+{
+  "name": "Final file for Vercel",
+  "description": "An intelligent tool that analyzes marketing campaigns using AI. It evaluates messages based on emotion, readability, trend relevance, and shareability to provide a confidence score and actionable recommendations.",
+  "requestFramePermissions": []
+}
