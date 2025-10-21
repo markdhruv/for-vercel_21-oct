@@ -52,18 +52,18 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
 
     const handleDownload = () => {
         const wb = XLSX.utils.book_new();
-        const ws_data: any[][] = [];
+        let ws_data: any[][] = [];
         const merges: any[] = [];
         let currentRow = 0;
 
-        results.forEach((result) => {
-            // Add a separator row if this is not the first campaign
-            if (currentRow > 0) {
+        results.forEach((result, index) => {
+             if (index > 0) {
+                ws_data.push([]); 
                 ws_data.push([]);
-                currentRow++;
+                currentRow += 2;
             }
 
-            // Campaign Identification Block
+            // --- CAMPAIGN IDENTIFICATION ---
             ws_data.push(['Campaign Message:', result.campaignMessage]);
             ws_data[currentRow][0] = { v: 'Campaign Message:', s: { font: { bold: true } } };
             merges.push({ s: { r: currentRow, c: 1 }, e: { r: currentRow, c: 7 } });
@@ -77,39 +77,39 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
             ws_data.push([]); // Spacer
             currentRow++;
 
-            // Scores Table
+            // --- SCORES TABLE ---
             const scoresHeader = ['', 'Confidence Score', 'Strategic Fit', 'Emotion', 'Clarity', 'CTA Strength', 'Relevance', 'Shareability'];
             ws_data.push(scoresHeader.map(h => ({ v: h, s: { font: { bold: true }, alignment: { horizontal: 'center' } } })));
             currentRow++;
             
             ws_data.push([
                 {v: 'Score', s: {font: {bold: true}}},
-                result.weightedCampaignConfidenceScore.toFixed(2),
-                result.subjectiveFitScore.toFixed(2),
-                result.combinedEmotionScore.toFixed(2),
-                result.clarityAndImpactScore.toFixed(2),
-                result.ctaStrengthScore.toFixed(2),
-                result.trendRelevanceScore.toFixed(2),
-                result.steppsShareabilityScore.toFixed(2),
+                {v: result.weightedCampaignConfidenceScore.toFixed(2), s: {alignment: {horizontal: 'center'}}},
+                {v: result.subjectiveFitScore.toFixed(2), s: {alignment: {horizontal: 'center'}}},
+                {v: result.combinedEmotionScore.toFixed(2), s: {alignment: {horizontal: 'center'}}},
+                {v: result.clarityAndImpactScore.toFixed(2), s: {alignment: {horizontal: 'center'}}},
+                {v: result.ctaStrengthScore.toFixed(2), s: {alignment: {horizontal: 'center'}}},
+                {v: result.trendRelevanceScore.toFixed(2), s: {alignment: {horizontal: 'center'}}},
+                {v: result.steppsShareabilityScore.toFixed(2), s: {alignment: {horizontal: 'center'}}},
             ]);
             currentRow++;
 
             ws_data.push([
                 {v: 'Justification', s: {font: {bold: true}}},
-                {v: result.subjectiveFitScoreJustification, s: {alignment: {wrapText: true}}},
-                {v: result.subjectiveFitScoreJustification, s: {alignment: {wrapText: true}}},
-                {v: result.combinedEmotionScoreJustification, s: {alignment: {wrapText: true}}},
-                {v: result.clarityAndImpactScoreJustification, s: {alignment: {wrapText: true}}},
-                {v: result.ctaStrengthScoreJustification, s: {alignment: {wrapText: true}}},
-                {v: result.trendRelevanceScoreJustification, s: {alignment: {wrapText: true}}},
-                {v: result.steppsShareabilityScoreJustification, s: {alignment: {wrapText: true}}},
+                {v: result.subjectiveFitScoreJustification, s: {alignment: {wrapText: true, vertical: 'top'}}},
+                {v: result.subjectiveFitScoreJustification, s: {alignment: {wrapText: true, vertical: 'top'}}},
+                {v: result.combinedEmotionScoreJustification, s: {alignment: {wrapText: true, vertical: 'top'}}},
+                {v: result.clarityAndImpactScoreJustification, s: {alignment: {wrapText: true, vertical: 'top'}}},
+                {v: result.ctaStrengthScoreJustification, s: {alignment: {wrapText: true, vertical: 'top'}}},
+                {v: result.trendRelevanceScoreJustification, s: {alignment: {wrapText: true, vertical: 'top'}}},
+                {v: result.steppsShareabilityScoreJustification, s: {alignment: {wrapText: true, vertical: 'top'}}},
             ]);
             currentRow++;
             
             ws_data.push([]); // Spacer
             currentRow++;
 
-            // Strategic Summary
+            // --- STRATEGIC SUMMARY ---
             ws_data.push([{v: 'AI Strategic Summary', s: {font: {bold: true}}}]);
             merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: 7 } });
             currentRow++;
@@ -121,7 +121,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
             ws_data.push([]); // Spacer
             currentRow++;
 
-            // Actionable Coaching
+            // --- ACTIONABLE COACHING ---
             ws_data.push([
                 {v: 'Key Strengths', s: {font: {bold: true}}}, 
                 null, null, null, 
@@ -145,7 +145,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
             ws_data.push([]); // Spacer
             currentRow++;
 
-            // Suggested Revision
+            // --- SUGGESTED REVISION ---
             ws_data.push([{v: 'AI Suggested Revision', s: {font: {bold: true}}}]);
             merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: 7 } });
             currentRow++;
@@ -157,7 +157,9 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
 
         const ws = XLSX.utils.aoa_to_sheet(ws_data);
         ws['!merges'] = merges;
-        ws['!cols'] = [ { wch: 20 }, { wch: 18 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 } ];
+        
+        const colWidths = [ { wch: 20 }, { wch: 18 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 } ];
+        ws['!cols'] = colWidths;
         
         XLSX.utils.book_append_sheet(wb, ws, 'Analysis Report');
         XLSX.writeFile(wb, 'Campaign_Confidence_Report.xlsx');
